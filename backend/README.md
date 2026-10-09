@@ -35,7 +35,7 @@ The frontend and backend are deployed as separate Vercel projects. Their URLs, t
 | `COOKIE_SECURE` | Set `true` when serving over HTTPS. Keep `false` for local HTTP development. |
 | `COOKIE_DOMAIN` | Optional cookie domain; leave empty for local development. |
 
-Create a GitHub OAuth App in GitHub Developer settings. Use the frontend URL as its homepage and set **Authorization callback URL** to exactly `https://backend-brown-chi-47.vercel.app/auth/github/callback`.
+Create a GitHub OAuth App in GitHub Developer settings. Use the frontend URL as its homepage and set **Authorization callback URL** to exactly `https://repolens-xgm4.onrender.com/auth/github/callback`.
 
 For Atlas, use the connection string provided by the cluster, replace its username/password placeholders, URL-encode reserved characters in the password, and allow your application host in Atlas Network Access. Never commit `.env` or publish MongoDB credentials.
 

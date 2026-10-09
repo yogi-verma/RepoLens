@@ -51,4 +51,4 @@ Repository contents and public account repositories are fetched from GitHub's pu
 
 ## Production
 
-Set `BACKEND_URI` in `app/config.ts` to the deployed API origin. Configure the backend's `FRONTEND_URL`, `CORS_ORIGINS`, secure cookies, and database connection in its deployment environment. The GitHub OAuth callback is `https://backend-brown-chi-47.vercel.app/auth/github/callback`.
+Set `BACKEND_URI` in `app/config.ts` to the deployed API origin. Configure the backend's `FRONTEND_URL`, `CORS_ORIGINS`, secure cookies, and database connection in its deployment environment. The GitHub OAuth callback is `https://repolens-xgm4.onrender.com/auth/github/callback`.
