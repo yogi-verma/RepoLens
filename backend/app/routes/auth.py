@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import logging
 import secrets
 from datetime import datetime, timezone
 from typing import Any
@@ -12,6 +13,7 @@ import httpx
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
 from fastapi.responses import RedirectResponse
 from pymongo import ASCENDING, ReturnDocument
+from pymongo.errors import PyMongoError
 
 from app.config import settings
 from app.database import get_database
@@ -25,6 +27,7 @@ GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_API_URL = "https://api.github.com"
 GITHUB_API_VERSION = "2022-11-28"
+logger = logging.getLogger(__name__)
 
 
 def _oauth_ready() -> None:
@@ -184,25 +187,39 @@ async def github_callback(
         return response
 
     now = datetime.now(timezone.utc)
-    await database[USERS_COLLECTION].create_index(
-        [("github_id", ASCENDING)], unique=True
-    )
-    user = await database[USERS_COLLECTION].find_one_and_update(
-        {"github_id": int(profile["id"])},
-        {
-            "$set": {
-                "github_username": str(profile["login"]),
-                "name": profile.get("name"),
-                "email": email,
-                "avatar_url": profile.get("avatar_url"),
-                "profile_url": str(profile.get("html_url") or f"https://github.com/{profile['login']}"),
-                "updated_at": now,
+    try:
+        await database[USERS_COLLECTION].create_index(
+            [("github_id", ASCENDING)], unique=True
+        )
+        user = await database[USERS_COLLECTION].find_one_and_update(
+            {"github_id": int(profile["id"])},
+            {
+                "$set": {
+                    "github_username": str(profile["login"]),
+                    "name": profile.get("name"),
+                    "email": email,
+                    "avatar_url": profile.get("avatar_url"),
+                    "profile_url": str(profile.get("html_url") or f"https://github.com/{profile['login']}"),
+                    "updated_at": now,
+                },
+                "$setOnInsert": {"id": str(uuid4()), "created_at": now},
             },
-            "$setOnInsert": {"id": str(uuid4()), "created_at": now},
-        },
-        upsert=True,
-        return_document=ReturnDocument.AFTER,
-    )
+            upsert=True,
+            return_document=ReturnDocument.AFTER,
+        )
+    except PyMongoError:
+        logger.exception("GitHub sign-in failed while accessing MongoDB")
+        response = _frontend_redirect("database_unavailable")
+        response.delete_cookie(settings.oauth_state_cookie_name, path=OAUTH_CALLBACK_PATH)
+        response.delete_cookie(settings.oauth_verifier_cookie_name, path=OAUTH_CALLBACK_PATH)
+        return response
+
+    if user is None:
+        logger.error("MongoDB returned no user after GitHub account upsert")
+        response = _frontend_redirect("account_creation_failed")
+        response.delete_cookie(settings.oauth_state_cookie_name, path=OAUTH_CALLBACK_PATH)
+        response.delete_cookie(settings.oauth_verifier_cookie_name, path=OAUTH_CALLBACK_PATH)
+        return response
 
     response = RedirectResponse(settings.frontend_url, status_code=303)
     response.delete_cookie(settings.oauth_state_cookie_name, path=OAUTH_CALLBACK_PATH)

@@ -61,7 +61,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-MongoDB must be reachable at `MONGODB_URI` before the API starts. The service creates the `users` collection's unique index on `github_id` at startup.
+For deployment, set `MONGODB_URI` to a reachable MongoDB Atlas connection string; the local default points to `localhost` and cannot connect from Vercel. The OAuth callback creates the `users` collection's unique index on `github_id` when it first persists a signed-in user.
 
 ## API endpoints
 
