@@ -11,7 +11,7 @@ from uuid import UUID, uuid4
 import httpx
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Query, Response, status
 from fastapi.responses import RedirectResponse
-from pymongo import ReturnDocument
+from pymongo import ASCENDING, ReturnDocument
 
 from app.config import settings
 from app.database import get_database
@@ -184,6 +184,9 @@ async def github_callback(
         return response
 
     now = datetime.now(timezone.utc)
+    await database[USERS_COLLECTION].create_index(
+        [("github_id", ASCENDING)], unique=True
+    )
     user = await database[USERS_COLLECTION].find_one_and_update(
         {"github_id": int(profile["id"])},
         {

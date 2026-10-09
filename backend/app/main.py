@@ -2,11 +2,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pymongo import ASCENDING
 
 from app.config import settings
 from app.database import client
-from app.models import USERS_COLLECTION
 from app.routes.auth import router as auth_router
 
 
@@ -14,9 +12,6 @@ from app.routes.auth import router as auth_router
 async def lifespan(app: FastAPI):
     app.state.mongo_client = client
     app.state.database = client[settings.mongodb_database]
-    await app.state.database[USERS_COLLECTION].create_index(
-        [("github_id", ASCENDING)], unique=True
-    )
     yield
     await client.close()
 
