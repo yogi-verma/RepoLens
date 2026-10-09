@@ -3,6 +3,8 @@ from functools import lru_cache
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.urls import FRONTEND_URI, GITHUB_REDIRECT_URI
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -16,9 +18,9 @@ class Settings(BaseSettings):
     mongodb_database: str = "repotour"
     github_client_id: str = ""
     github_client_secret: str = ""
-    github_redirect_uri: str = "http://localhost:8000/auth/github/callback"
-    frontend_url: str = "http://localhost:3000"
-    cors_origins: str = "http://localhost:3000"
+    github_redirect_uri: str = GITHUB_REDIRECT_URI
+    frontend_url: str = FRONTEND_URI
+    cors_origins: str = FRONTEND_URI
     jwt_secret: str = ""
     jwt_expires_minutes: int = Field(default=10080, ge=5, le=43200)
     cookie_secure: bool = False

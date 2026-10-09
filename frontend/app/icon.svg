@@ -4,7 +4,7 @@
       <stop stop-color="#202729" />
       <stop offset="1" stop-color="#111516" />
     </linearGradient>
-    <linearGradient id="v" x1="35" y1="13" x2="53" y2="51" gradientUnits="userSpaceOnUse">
+    <linearGradient id="l" x1="40" y1="13" x2="53" y2="51" gradientUnits="userSpaceOnUse">
       <stop stop-color="#dce8b7" />
       <stop offset="1" stop-color="#9aaa63" />
     </linearGradient>
@@ -12,5 +12,5 @@
   <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg)" />
   <rect x="2.75" y="2.75" width="58.5" height="58.5" rx="15.25" stroke="#87945c" stroke-opacity=".75" stroke-width="1.5" />
   <path d="M13 49V16h11.5c7.2 0 11 3.4 11 9.5S31.7 35 24.5 35H13m11.5 0L35 49" stroke="#f1f2e9" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
-  <path d="m35 16 9 33 9-33" stroke="url(#v)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+  <path d="M40 16v33h12" stroke="url(#l)" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
 </svg>

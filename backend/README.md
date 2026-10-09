@@ -22,19 +22,16 @@ Docker and Podman are not required.
 
 ## Configuration
 
-Copy `.env.example` to `.env` and fill in the values:
+Set the application URLs in [`app/urls.py`](app/urls.py). Change `BACKEND_URI` and `FRONTEND_URI` there when deploying; the GitHub OAuth callback and CORS origin are derived from these values. Put secrets and other runtime settings in `.env`:
 
 | Variable | Purpose |
 | --- | --- |
 | `GITHUB_CLIENT_ID` | Client ID from the GitHub OAuth App. |
 | `GITHUB_CLIENT_SECRET` | Client secret from the GitHub OAuth App. Keep it private. |
-| `GITHUB_REDIRECT_URI` | OAuth callback URL; local default is `http://localhost:8000/auth/github/callback`. |
 | `JWT_SECRET` | Random secret of at least 32 characters for signing sessions. |
 | `JWT_EXPIRES_MINUTES` | Session duration in minutes. |
 | `MONGODB_URI` | MongoDB connection string. Local default: `mongodb://localhost:27017/`. |
 | `MONGODB_DATABASE` | MongoDB database name. |
-| `FRONTEND_URL` | Frontend URL to redirect to after OAuth. Local default: `http://localhost:3000`. |
-| `CORS_ORIGINS` | Comma-separated frontend origins allowed to call the API. |
 | `COOKIE_SECURE` | Set `true` when serving over HTTPS. Keep `false` for local HTTP development. |
 | `COOKIE_DOMAIN` | Optional cookie domain; leave empty for local development. |
 
