@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiArrowLeft, FiArrowUpRight, FiBookOpen, FiCalendar, FiCheck, FiExternalLink, FiGithub, FiLogOut, FiMail, FiShield, FiUser } from "react-icons/fi";
-import { BACKEND_API_BASE } from "../config";
+import { BACKEND_ORIGIN } from "../config";
 import Header from "../Header/Header";
 import "./Profile.css";
 
@@ -45,7 +45,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${BACKEND_API_BASE}/auth/me`, { credentials: "include", headers: { Accept: "application/json" } })
+    fetch(`${BACKEND_ORIGIN}/auth/me`, { credentials: "include", headers: { Accept: "application/json" } })
       .then(async (response) => {
         if (response.status === 401) return null;
         if (!response.ok) throw new Error("We could not load your account right now.");
@@ -109,7 +109,7 @@ export default function ProfilePage() {
   async function signOut() {
     setSigningOut(true);
     try {
-      const response = await fetch(`${BACKEND_API_BASE}/auth/logout`, { method: "POST", credentials: "include" });
+      const response = await fetch(`${BACKEND_ORIGIN}/auth/logout`, { method: "POST", credentials: "include" });
       if (!response.ok) throw new Error("Sign out could not be completed. Please try again.");
       setUser(null);
       setSignedOut(true);
@@ -150,7 +150,7 @@ export default function ProfilePage() {
             <span className="profile-eyebrow">NOT SIGNED IN</span>
             <h2>{signedOut ? "You’ve signed out" : "Your profile is waiting"}</h2>
             <p>Sign in with GitHub to see your account details here.</p>
-            <a className="profile-primary-action" href={`${BACKEND_API_BASE}/auth/github`}><FiGithub aria-hidden="true" /> Continue with GitHub <FiArrowUpRight aria-hidden="true" /></a>
+            <a className="profile-primary-action" href={`${BACKEND_ORIGIN}/auth/github`}><FiGithub aria-hidden="true" /> Continue with GitHub <FiArrowUpRight aria-hidden="true" /></a>
           </section>
         ) : (
           <>

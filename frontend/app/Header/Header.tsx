@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiUser } from "react-icons/fi";
-import { BACKEND_API_BASE } from "../config";
+import { BACKEND_ORIGIN } from "../config";
 import "./Header.css";
 
 type HeaderProps = {
@@ -32,7 +32,7 @@ export default function Header({ theme, onToggleTheme }: HeaderProps) {
     let cancelled = false;
     async function refreshUser() {
       try {
-        const response = await fetch(`${BACKEND_API_BASE}/auth/me`, { credentials: "include", headers: { Accept: "application/json" } });
+        const response = await fetch(`${BACKEND_ORIGIN}/auth/me`, { credentials: "include", headers: { Accept: "application/json" } });
         const data = response.ok ? await response.json() : null;
         if (!cancelled) setUser(data?.user ?? null);
       } catch {
@@ -72,7 +72,7 @@ export default function Header({ theme, onToggleTheme }: HeaderProps) {
             {user.avatar_url ? <img src={user.avatar_url} alt="" /> : <FiUser aria-hidden="true" />}
           </Link>
         ) : authResolved ? (
-          <a className="site-auth-link" href={`${BACKEND_API_BASE}/auth/github`}>
+          <a className="site-auth-link" href={`${BACKEND_ORIGIN}/auth/github`}>
             Login / Sign up
           </a>
         ) : (

@@ -25,9 +25,6 @@ app = FastAPI(
     title=settings.app_name,
     version="0.1.0",
     lifespan=lifespan,
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
 )
 app.add_middleware(
     CORSMiddleware,
@@ -36,15 +33,15 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Accept"],
 )
-app.include_router(auth_router, prefix="/api")
+app.include_router(auth_router)
 
 
-@app.get("/api/health", tags=["health"])
+@app.get("/health", tags=["health"])
 async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/api/health/ready", tags=["health"])
+@app.get("/health/ready", tags=["health"])
 async def readiness() -> dict[str, str]:
     await client.admin.command("ping")
     return {"status": "ready", "database": "connected"}

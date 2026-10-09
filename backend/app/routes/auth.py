@@ -20,7 +20,7 @@ from app.schemas import SessionResponse
 from app.security import create_session_token, read_session_user_id
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
-OAUTH_CALLBACK_PATH = "/api/auth/github/callback"
+OAUTH_CALLBACK_PATH = "/auth/github/callback"
 GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_API_URL = "https://api.github.com"
@@ -51,8 +51,8 @@ def _set_session_cookie(response: Response, token: str) -> None:
         value=token,
         max_age=settings.jwt_expires_minutes * 60,
         httponly=True,
-        secure=settings.cookie_secure,
-        samesite="lax",
+        secure=settings.secure_cookies,
+        samesite=settings.cookie_samesite,
         path="/",
         domain=settings.cookie_domain,
     )
@@ -109,8 +109,8 @@ async def github_login() -> RedirectResponse:
         value=state,
         max_age=600,
         httponly=True,
-        secure=settings.cookie_secure,
-        samesite="lax",
+        secure=settings.secure_cookies,
+        samesite=settings.cookie_samesite,
         path=OAUTH_CALLBACK_PATH,
     )
     redirect.set_cookie(
@@ -118,8 +118,8 @@ async def github_login() -> RedirectResponse:
         value=code_verifier,
         max_age=600,
         httponly=True,
-        secure=settings.cookie_secure,
-        samesite="lax",
+        secure=settings.secure_cookies,
+        samesite=settings.cookie_samesite,
         path=OAUTH_CALLBACK_PATH,
     )
     return redirect
@@ -230,8 +230,8 @@ async def logout() -> Response:
         key=settings.session_cookie_name,
         path="/",
         domain=settings.cookie_domain,
-        secure=settings.cookie_secure,
+        secure=settings.secure_cookies,
         httponly=True,
-        samesite="lax",
+        samesite=settings.cookie_samesite,
     )
     return response

@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 
 from pydantic import Field
@@ -31,7 +32,23 @@ class Settings(BaseSettings):
 
     @property
     def allowed_origins(self) -> list[str]:
-        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+        origins = [
+            origin.strip().rstrip("/")
+            for origin in self.cors_origins.split(",")
+            if origin.strip()
+        ]
+        frontend_origin = self.frontend_url.rstrip("/")
+        if frontend_origin not in origins:
+            origins.append(frontend_origin)
+        return origins
+
+    @property
+    def secure_cookies(self) -> bool:
+        return self.cookie_secure or os.getenv("VERCEL") == "1"
+
+    @property
+    def cookie_samesite(self) -> str:
+        return "none" if self.secure_cookies else "lax"
 
     @property
     def github_oauth_configured(self) -> bool:
