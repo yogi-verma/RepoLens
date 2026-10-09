@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { FiArrowLeft, FiArrowUpRight, FiChevronLeft, FiChevronRight, FiExternalLink, FiGithub, FiSearch } from "react-icons/fi";
+import { BACKEND_ORIGIN } from "../../../config";
 import Header from "../../../Header/Header";
 import "./Repository.css";
 
@@ -16,8 +17,6 @@ type Repository = {
   language: string | null;
   updated_at: string;
 };
-
-const apiOrigin = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/+$/, "");
 
 export default function ProfileRepositoriesPage() {
   return (
@@ -56,7 +55,7 @@ function ProfileRepositoriesPageContent() {
       setLoading(true);
       setError("");
       try {
-        const sessionResponse = await fetch(`${apiOrigin}/auth/me`, {
+        const sessionResponse = await fetch(`${BACKEND_ORIGIN}/auth/me`, {
           credentials: "include",
           headers: { Accept: "application/json" },
         });
@@ -148,7 +147,7 @@ function ProfileRepositoriesPageContent() {
             <span className="repository-state-icon"><FiGithub aria-hidden="true" /></span>
             <h2>Sign in to see your repositories</h2>
             <p>Your account is not currently connected.</p>
-            <a className="repository-login-button" href={`${apiOrigin}/auth/github`}><FiGithub aria-hidden="true" /> Continue with GitHub <FiArrowUpRight aria-hidden="true" /></a>
+            <a className="repository-login-button" href={`${BACKEND_ORIGIN}/auth/github`}><FiGithub aria-hidden="true" /> Continue with GitHub <FiArrowUpRight aria-hidden="true" /></a>
           </section>
         ) : error ? (
           <section className="repository-state repository-empty" role="alert">

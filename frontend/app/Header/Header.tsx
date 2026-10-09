@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiUser } from "react-icons/fi";
+import { BACKEND_ORIGIN } from "../config";
 import "./Header.css";
 
 type HeaderProps = {
@@ -24,7 +25,6 @@ function GitHubMark({ size = 18 }: { size?: number }) {
 }
 
 export default function Header({ theme, onToggleTheme }: HeaderProps) {
-  const apiOrigin = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/+$/, "");
   const [user, setUser] = useState<SignedInUser | null>(null);
   const [authResolved, setAuthResolved] = useState(false);
 
@@ -32,7 +32,7 @@ export default function Header({ theme, onToggleTheme }: HeaderProps) {
     let cancelled = false;
     async function refreshUser() {
       try {
-        const response = await fetch(`${apiOrigin}/auth/me`, { credentials: "include", headers: { Accept: "application/json" } });
+        const response = await fetch(`${BACKEND_ORIGIN}/auth/me`, { credentials: "include", headers: { Accept: "application/json" } });
         const data = response.ok ? await response.json() : null;
         if (!cancelled) setUser(data?.user ?? null);
       } catch {
@@ -48,7 +48,7 @@ export default function Header({ theme, onToggleTheme }: HeaderProps) {
       cancelled = true;
       window.removeEventListener("repotour-auth-changed", onAuthChanged);
     };
-  }, [apiOrigin]);
+  }, []);
 
   return (
     <header className="site-header">
@@ -72,7 +72,7 @@ export default function Header({ theme, onToggleTheme }: HeaderProps) {
             {user.avatar_url ? <img src={user.avatar_url} alt="" /> : <FiUser aria-hidden="true" />}
           </Link>
         ) : authResolved ? (
-          <a className="site-auth-link" href={`${apiOrigin}/auth/github`}>
+          <a className="site-auth-link" href={`${BACKEND_ORIGIN}/auth/github`}>
             Login / Sign up
           </a>
         ) : (

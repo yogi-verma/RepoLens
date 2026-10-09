@@ -24,11 +24,7 @@ From the `frontend` directory:
 npm ci
 ```
 
-Copy `.env.example` to `.env.local` and set the backend URL if it differs from the default:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
+The backend URL is centralized in [`app/config.ts`](app/config.ts). Change `BACKEND_URI` there when deploying the frontend against a different backend.
 
 Start the development server:
 
@@ -55,4 +51,4 @@ Repository contents and public account repositories are fetched from GitHub's pu
 
 ## Production
 
-Set `NEXT_PUBLIC_API_URL` to the deployed API origin before building. Configure the backend's OAuth redirect URL, frontend URL, CORS origins, secure cookies, and database connection for the production domains. Use HTTPS for both applications.
+Update `BACKEND_URI` in `app/config.ts` to the deployed API origin before building. Configure the backend's OAuth redirect URL, frontend URL, CORS origins, secure cookies, and database connection for the production domains. Use HTTPS for both applications.
