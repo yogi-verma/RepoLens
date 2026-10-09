@@ -22,7 +22,7 @@ Docker and Podman are not required.
 
 ## Configuration
 
-Set the application URLs in [`app/urls.py`](app/urls.py). Change `BACKEND_URI` and `FRONTEND_URI` there when deploying; the GitHub OAuth callback and CORS origin are derived from these values. Put secrets and other runtime settings in `.env`:
+In Vercel Services mode, the frontend and backend share one domain. The backend is publicly mounted under `/api`; Vercel injects the frontend URL at runtime. For local development, the URL defaults are in [`app/urls.py`](app/urls.py). Put secrets and other runtime settings in `.env`:
 
 | Variable | Purpose |
 | --- | --- |
@@ -35,7 +35,7 @@ Set the application URLs in [`app/urls.py`](app/urls.py). Change `BACKEND_URI` a
 | `COOKIE_SECURE` | Set `true` when serving over HTTPS. Keep `false` for local HTTP development. |
 | `COOKIE_DOMAIN` | Optional cookie domain; leave empty for local development. |
 
-Create a GitHub OAuth App in GitHub Developer settings. Use the frontend URL as its homepage and set **Authorization callback URL** to exactly the same value as `GITHUB_REDIRECT_URI`.
+Create a GitHub OAuth App in GitHub Developer settings. Use the frontend URL as its homepage and set **Authorization callback URL** to `https://<your-vercel-domain>/api/auth/github/callback`.
 
 For Atlas, use the connection string provided by the cluster, replace its username/password placeholders, URL-encode reserved characters in the password, and allow your application host in Atlas Network Access. Never commit `.env` or publish MongoDB credentials.
 
@@ -67,14 +67,14 @@ MongoDB must be reachable at `MONGODB_URI` before the API starts. The service cr
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/health` | Liveness check. |
-| `GET` | `/health/ready` | Checks that MongoDB responds to a ping. |
-| `GET` | `/auth/github` | Starts GitHub sign-in. |
-| `GET` | `/auth/github/callback` | Completes sign-in and sets the session cookie. |
-| `GET` | `/auth/me` | Returns the current signed-in user. |
-| `POST` | `/auth/logout` | Clears the session cookie. |
+| `GET` | `/api/health` | Liveness check. |
+| `GET` | `/api/health/ready` | Checks that MongoDB responds to a ping. |
+| `GET` | `/api/auth/github` | Starts GitHub sign-in. |
+| `GET` | `/api/auth/github/callback` | Completes sign-in and sets the session cookie. |
+| `GET` | `/api/auth/me` | Returns the current signed-in user. |
+| `POST` | `/api/auth/logout` | Clears the session cookie. |
 
-Interactive API documentation is available at [http://localhost:8000/docs](http://localhost:8000/docs).
+Interactive API documentation is available at [http://localhost:8000/api/docs](http://localhost:8000/api/docs).
 
 ## Production notes
 

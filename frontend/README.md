@@ -24,7 +24,7 @@ From the `frontend` directory:
 npm ci
 ```
 
-The backend URL is centralized in [`app/config.ts`](app/config.ts). Change `BACKEND_URI` there when deploying the frontend against a different backend.
+The backend API route is `/api`. In Vercel Services deployments, Vercel provides this route prefix through `NEXT_PUBLIC_BACKEND_URL`; local development falls back to `http://localhost:8000/api`.
 
 Start the development server:
 
@@ -45,10 +45,10 @@ Open [http://localhost:3000](http://localhost:3000). Start the backend separatel
 
 ## Authentication and API
 
-The frontend starts GitHub OAuth by navigating to the backend's `/auth/github` endpoint. It calls `/auth/me` and `/auth/logout` with browser credentials so the backend's HTTP-only session cookie is sent. Configure the backend CORS origin to include `http://localhost:3000`.
+The frontend starts GitHub OAuth through `/api/auth/github`. It calls `/api/auth/me` and `/api/auth/logout` with browser credentials so the backend's HTTP-only session cookie is sent. Vercel routes `/api/**` to FastAPI on the same origin.
 
 Repository contents and public account repositories are fetched from GitHub's public REST API. GitHub's unauthenticated API rate limits may affect those views; the UI displays an error when GitHub returns a rate-limit response.
 
 ## Production
 
-Update `BACKEND_URI` in `app/config.ts` to the deployed API origin before building. Configure the backend's OAuth redirect URL, frontend URL, CORS origins, secure cookies, and database connection for the production domains. Use HTTPS for both applications.
+The frontend and backend deploy together through the root [`../vercel.json`](../vercel.json). Configure backend secrets in Vercel and set the GitHub OAuth callback to `https://<your-vercel-domain>/api/auth/github/callback`.

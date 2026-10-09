@@ -20,6 +20,7 @@ from app.schemas import SessionResponse
 from app.security import create_session_token, read_session_user_id
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
+OAUTH_CALLBACK_PATH = "/api/auth/github/callback"
 GITHUB_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
 GITHUB_API_URL = "https://api.github.com"
@@ -110,7 +111,7 @@ async def github_login() -> RedirectResponse:
         httponly=True,
         secure=settings.cookie_secure,
         samesite="lax",
-        path="/auth/github/callback",
+        path=OAUTH_CALLBACK_PATH,
     )
     redirect.set_cookie(
         key=settings.oauth_verifier_cookie_name,
@@ -119,7 +120,7 @@ async def github_login() -> RedirectResponse:
         httponly=True,
         secure=settings.cookie_secure,
         samesite="lax",
-        path="/auth/github/callback",
+        path=OAUTH_CALLBACK_PATH,
     )
     return redirect
 
@@ -135,8 +136,8 @@ async def github_callback(
 ) -> Response:
     if error:
         response = _frontend_redirect("github_denied")
-        response.delete_cookie(settings.oauth_state_cookie_name, path="/auth/github/callback")
-        response.delete_cookie(settings.oauth_verifier_cookie_name, path="/auth/github/callback")
+        response.delete_cookie(settings.oauth_state_cookie_name, path=OAUTH_CALLBACK_PATH)
+        response.delete_cookie(settings.oauth_verifier_cookie_name, path=OAUTH_CALLBACK_PATH)
         return response
 
     if (
@@ -147,8 +148,8 @@ async def github_callback(
         or not secrets.compare_digest(state, state_cookie)
     ):
         response = _frontend_redirect("invalid_oauth_state")
-        response.delete_cookie(settings.oauth_state_cookie_name, path="/auth/github/callback")
-        response.delete_cookie(settings.oauth_verifier_cookie_name, path="/auth/github/callback")
+        response.delete_cookie(settings.oauth_state_cookie_name, path=OAUTH_CALLBACK_PATH)
+        response.delete_cookie(settings.oauth_verifier_cookie_name, path=OAUTH_CALLBACK_PATH)
         return response
 
     _oauth_ready()
@@ -178,8 +179,8 @@ async def github_callback(
             email = profile.get("email") or await _primary_verified_email(client, token)
     except (httpx.HTTPError, ValueError, KeyError):
         response = _frontend_redirect("github_authentication_failed")
-        response.delete_cookie(settings.oauth_state_cookie_name, path="/auth/github/callback")
-        response.delete_cookie(settings.oauth_verifier_cookie_name, path="/auth/github/callback")
+        response.delete_cookie(settings.oauth_state_cookie_name, path=OAUTH_CALLBACK_PATH)
+        response.delete_cookie(settings.oauth_verifier_cookie_name, path=OAUTH_CALLBACK_PATH)
         return response
 
     now = datetime.now(timezone.utc)
@@ -201,8 +202,8 @@ async def github_callback(
     )
 
     response = RedirectResponse(settings.frontend_url, status_code=303)
-    response.delete_cookie(settings.oauth_state_cookie_name, path="/auth/github/callback")
-    response.delete_cookie(settings.oauth_verifier_cookie_name, path="/auth/github/callback")
+    response.delete_cookie(settings.oauth_state_cookie_name, path=OAUTH_CALLBACK_PATH)
+    response.delete_cookie(settings.oauth_verifier_cookie_name, path=OAUTH_CALLBACK_PATH)
     _set_session_cookie(response, create_session_token(UUID(user["id"])))
     return response
 

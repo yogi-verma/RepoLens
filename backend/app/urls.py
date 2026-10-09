@@ -1,7 +1,9 @@
-"""Central URL configuration for the frontend and backend deployments."""
+"""Central URL configuration for local development and Vercel Services."""
 
-# Update these two origins when deploying the applications.
-BACKEND_URI = "https://backend-brown-chi-47.vercel.app"
-FRONTEND_URI = "https://repo-lens-olive.vercel.app/"
+import os
 
-GITHUB_REDIRECT_URI = f"{BACKEND_URI.rstrip('/')}/auth/github/callback"
+# Vercel Services injects FRONTEND_URL at runtime. Locally, use the dev servers.
+FRONTEND_URI = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+BACKEND_API_PREFIX = "/api"
+
+GITHUB_REDIRECT_URI = f"{FRONTEND_URI}{BACKEND_API_PREFIX}/auth/github/callback"
